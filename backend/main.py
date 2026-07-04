@@ -11,18 +11,18 @@ from backend.auth.routes import router as auth_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Connect database
+    # Connect database (or fallback to in‑memory)
     await db.connect()
     yield
-    # Close resources if any
+    # Any graceful shutdown logic would go here
 
 app = FastAPI(
     title="Placement Preparation Agent API",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
-# Enable CORS for local cross-origin testing/debugging
+# CORS – keep it open for local testing / Vercel preview
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -31,22 +31,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register endpoints
+# Register routers – auth first so `/api/auth/*` works
 app.include_router(auth_router)
 app.include_router(api_router)
 
-# Serve SPA Frontend
-frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
-if os.path.exists(frontend_path):
-    # Serve index.html as homepage
-    @app.get("/")
-    async def get_index():
+# ----------------------------------------------------------------------
+# Static SPA handling (only used when running locally; Vercel serves via
+# the `vercel.json` routes).  The logic stays harmless on Vercel.
+# ----------------------------------------------------------------------
+def _frontend_path() -> str:
+    # Resolve the path relative to THIS file (works both locally and in Vercel)
+    return os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "frontend")
+    )
+
+frontend_path = _frontend_path()
+if os.path.isdir(frontend_path):
+    # Serve `index.html` at the root when the folder exists
+    @app.get("/", response_class=FileResponse)
+    async def root() -> FileResponse:
         return FileResponse(os.path.join(frontend_path, "index.html"))
 
-    # Mount the rest of the folder for CSS, JS, etc.
+    # Mount the whole folder for CSS, JS, images, etc.
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 else:
-    # Fail-safe endpoint if frontend files are missing locally during compile checks
-    @app.get("/")
-    async def root():
-        return {"status": "success", "message": "Placement Preparation Agent API is running. Frontend folder not found."}
+    # Fail‑safe endpoint for CI / lint runs
+    @app.get("/", response_class=FileResponse)
+    async def dummy_root() -> FileResponse:
+        return FileResponse("README.md")  # any static file – never used in production
