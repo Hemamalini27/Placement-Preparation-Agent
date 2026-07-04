@@ -1,28 +1,6 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "builds": [
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "50mb",
-        "runtime": "python3.12"
-      }
-    },
-    {
-      "src": "frontend/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/index.py" },
-    { "src": "/login.html", "dest": "/frontend/login.html" },
-    { "src": "/css/(.*)", "dest": "/frontend/css/$1" },
-    { "src": "/js/(.*)", "dest": "/frontend/js/$1" },
-    { "src": "/(.*\\.html)", "dest": "/frontend/$1" },
-    { "src": "/(.*\\.css)", "dest": "/frontend/$1" },
-    { "src": "/(.*\\.js)", "dest": "/frontend/$1" },
-    { "src": "/", "dest": "/frontend/index.html" }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.py" }
   ]
 }

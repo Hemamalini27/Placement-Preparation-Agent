@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Preparation Agent - Security Center</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- CSS Style -->
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <!-- Floating Animated Blurred Background Spheres -->
+        <div class="floating-bubble bubble-1"></div>
+        <div class="floating-bubble bubble-2"></div>
+        <div class="floating-bubble bubble-3"></div>
+
+        <!-- Auth Card Container -->
+        <div class="auth-card-container">
+            <div class="auth-card glass">
+                
+                <!-- Logo & Brand Header -->
+                <div class="auth-brand">
+                    <i data-lucide="shield-check" class="brand-icon"></i>
+                    <h2>PrepAgent <span class="badge-pro">SECURE</span></h2>
+                    <p class="brand-subtitle">AI-Powered Placement Strategy Engine</p>
+                </div>
+
+                <!-- Forms Area -->
+                <div class="form-container">
+                    
+                    <!-- 1. LOGIN FORM -->
+                    <form id="form-login" class="auth-form">
+                        <h3>Welcome Back</h3>
+                        <p class="form-desc">Sign in to resume your preparation modules</p>
+                        
+                        <div class="form-group">
+                            <label for="login-username">Username</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="user"></i>
+                                <input type="text" id="login-username" placeholder="Enter username" autocomplete="username">
+                            </div>
+                            <span class="inline-error" id="error-login-username"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="lock"></i>
+                                <input type="password" id="login-password" placeholder="Enter password" autocomplete="current-password">
+                            </div>
+                            <span class="inline-error" id="error-login-password"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block" id="btn-login-submit">
+                            <span>Login Session</span>
+                            <i data-lucide="arrow-right"></i>
+                        </button>
+
+                        <p class="auth-toggle-link">
+                            New Candidate? <a href="#" id="link-show-register">Create Account</a>
+                        </p>
+                    </form>
+
+                    <!-- 2. REGISTRATION FORM -->
+                    <form id="form-register" class="auth-form hidden">
+                        <h3>Establish Profile</h3>
+                        <p class="form-desc">Register your candidate details for AI evaluation</p>
+
+                        <div class="form-group">
+                            <label for="reg-fullname">Full Name</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="user-check"></i>
+                                <input type="text" id="reg-fullname" placeholder="e.g. Alice Smith">
+                            </div>
+                            <span class="inline-error" id="error-reg-fullname"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-username">Username</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="hash"></i>
+                                <input type="text" id="reg-username" placeholder="e.g. alicesmith" autocomplete="username">
+                            </div>
+                            <span class="inline-error" id="error-reg-username"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-email">Email Address</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="mail"></i>
+                                <input type="text" id="reg-email" placeholder="e.g. alice@example.com" autocomplete="email">
+                            </div>
+                            <span class="inline-error" id="error-reg-email"></span>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reg-password">Password</label>
+                                <div class="input-wrapper">
+                                    <i data-lucide="lock"></i>
+                                    <input type="password" id="reg-password" placeholder="Min 8 chars" autocomplete="new-password">
+                                </div>
+                                <span class="inline-error" id="error-reg-password"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reg-confirm">Confirm Password</label>
+                                <div class="input-wrapper">
+                                    <i data-lucide="key-round"></i>
+                                    <input type="password" id="reg-confirm" placeholder="Re-type password" autocomplete="new-password">
+                                </div>
+                                <span class="inline-error" id="error-reg-confirm"></span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block" id="btn-register-submit">
+                            <span>Register Candidate</span>
+                            <i data-lucide="sparkles"></i>
+                        </button>
+
+                        <p class="auth-toggle-link">
+                            Already registered? <a href="#" id="link-show-login">Back to Login</a>
+                        </p>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Banner -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        // Session Guard: Instant redirect if unauthenticated to avoid screen flashing
+        if (!localStorage.getItem('auth_token')) {
+            window.location.replace('login.html');
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Preparation Agent - AI Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Background Glows -->
+        <div class="glow-sphere glow-1"></div>
+        <div class="glow-sphere glow-2"></div>
+        <div class="glow-sphere glow-3"></div>
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i data-lucide="cpu" class="brand-icon"></i>
+                <h2>PrepAgent <span class="badge-pro">AI</span></h2>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="dashboard" id="btn-tab-dashboard">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="planner" id="btn-tab-planner">
+                    <i data-lucide="calendar"></i>
+                    <span>Study Planner</span>
+                </button>
+                <button class="nav-item" data-tab="arena" id="btn-tab-arena">
+                    <i data-lucide="code-2"></i>
+                    <span>Coding Arena</span>
+                </button>
+                <button class="nav-item" data-tab="interview" id="btn-tab-interview">
+                    <i data-lucide="message-square"></i>
+                    <span>Mock Interview</span>
+                </button>
+                <button class="nav-item" data-tab="logs" id="btn-tab-logs">
+                    <i data-lucide="terminal"></i>
+                    <span>Agent Activity Log</span>
+                </button>
+                <button class="nav-item" id="btn-logout" style="margin-top: auto; color: #ef4444;">
+                    <i data-lucide="log-out" style="color: #ef4444;"></i>
+                    <span>Logout</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="pulse-dot green"></span>
+                    <span id="system-status">Checking System...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <h1 id="tab-title">Dashboard Overview</h1>
+                    <p id="tab-subtitle">Real-time placement prep metrics and analytics</p>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-secondary btn-refresh" id="btn-refresh-dashboard">
+                        <i data-lucide="refresh-cw"></i>
+                        <span>Refresh Metrics</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- TABS -->
+
+            <!-- Tab 1: Dashboard Panel -->
+            <section class="tab-panel active" id="panel-dashboard">
+                <!-- Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card glass">
+                        <div class="metric-info">
+                            <span class="metric-label">Interviews Conducted</span>
+                            <h3 class="metric-value" id="metric-interviews">0</h3>
+                        </div>
+                        <div class="metric-icon-wrapper purple">
+                            <i data-lucide="message-square"></i>
+                        </div>
+                    </div>
+                    <div class="metric-card glass">
+                        <div class="metric-info">
+                            <span class="metric-label">Problems Curated</span>
+                            <h3 class="metric-value" id="metric-problems">0</h3>
+                        </div>
+                        <div class="metric-icon-wrapper blue">
+                            <i data-lucide="code-2"></i>
+                        </div>
+                    </div>
+                    <div class="metric-card glass">
+                        <div class="metric-info">
+                            <span class="metric-label">Study Plans Executed</span>
+                            <h3 class="metric-value" id="metric-plans">0</h3>
+                        </div>
+                        <div class="metric-icon-wrapper green">
+                            <i data-lucide="calendar"></i>
+                        </div>
+                    </div>
+                    <div class="metric-card glass">
+                        <div class="metric-info">
+                            <span class="metric-label">Skill Quotient</span>
+                            <h3 class="metric-value" id="metric-skills">0%</h3>
+                        </div>
+                        <div class="metric-icon-wrapper amber">
+                            <i data-lucide="award"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-card glass">
+                        <h3>Preparation Cadence</h3>
+                        <p class="chart-subtitle">Completed tasks and interviews over the last 7 days</p>
+                        <div class="chart-container">
+                            <canvas id="chart-cadence"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card glass">
+                        <h3>Skill Proficiencies</h3>
+                        <p class="chart-subtitle">Relative strength index based on mock performance</p>
+                        <div class="chart-container">
+                            <canvas id="chart-skills"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 2: Study Planner -->
+            <section class="tab-panel" id="panel-planner">
+                <div class="split-layout">
+                    <!-- Config Form -->
+                    <div class="config-card glass">
+                        <div class="card-header-icon text-indigo">
+                            <i data-lucide="compass"></i>
+                            <h3>Create Study Plan</h3>
+                        </div>
+                        <form id="form-study-plan" class="prep-form">
+                            <div class="form-group">
+                                <label for="planner-role">Target Role</label>
+                                <input type="text" id="planner-role" required placeholder="e.g. Full-Stack Developer, DevOps Engineer">
+                            </div>
+                            <div class="form-group">
+                                <label for="planner-level">Current Skill Level</label>
+                                <select id="planner-level" required>
+                                    <option value="Beginner">Beginner (Little practical experience)</option>
+                                    <option value="Intermediate" selected>Intermediate (Understand concepts, need structure)</option>
+                                    <option value="Advanced">Advanced (Refining edge cases & design patterns)</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="planner-hours">Prep Hours / Day</label>
+                                    <input type="number" id="planner-hours" min="1" max="16" value="4" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="planner-date">Target Placement Date</label>
+                                    <input type="date" id="planner-date">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i data-lucide="sparkles"></i>
+                                <span>Generate 7-Day Plan</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Output Container -->
+                    <div class="results-container">
+                        <div id="planner-empty-state" class="empty-state glass">
+                            <i data-lucide="calendar" class="empty-icon text-muted"></i>
+                            <h3>No Active Study Plan</h3>
+                            <p>Configure and generate a personalized 7-day curriculum to accelerate your preparation.</p>
+                        </div>
+                        <div id="planner-loading-state" class="loading-state hidden glass">
+                            <div class="spinner"></div>
+                            <h3>Planner Agent standardizing your program...</h3>
+                            <p>Gemini is tailoring resources, coding questions, and review milestones.</p>
+                        </div>
+                        <div id="planner-results" class="planner-results-wrapper hidden">
+                            <!-- Injected study plan header -->
+                            <div class="plan-summary-card glass">
+                                <div class="plan-header">
+                                    <h3 id="plan-title-role">Software Engineer Prep</h3>
+                                    <span class="badge badge-purple" id="plan-badge-hours">28 Hours Total</span>
+                                </div>
+                            </div>
+                            <!-- Injected 7 days grid -->
+                            <div class="days-timeline" id="plan-days-timeline">
+                                <!-- Day Cards go here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 3: Coding Arena -->
+            <section class="tab-panel" id="panel-arena">
+                <div class="split-layout">
+                    <!-- Config Form -->
+                    <div class="config-card glass">
+                        <div class="card-header-icon text-blue">
+                            <i data-lucide="terminal"></i>
+                            <h3>Get Challenges</h3>
+                        </div>
+                        <form id="form-coding-arena" class="prep-form">
+                            <div class="form-group">
+                                <label for="arena-role">Target Role</label>
+                                <input type="text" id="arena-role" required placeholder="e.g. Backend Engineer, Data Scientist">
+                            </div>
+                            <div class="form-group">
+                                <label for="arena-level">Difficulty Target</label>
+                                <select id="arena-level" required>
+                                    <option value="Easy">Easy (Beginner fundamentals)</option>
+                                    <option value="Medium" selected>Medium (Standard interviewing tier)</option>
+                                    <option value="Hard">Hard (FAANG and specialized levels)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i data-lucide="sparkles"></i>
+                                <span>Curate Problems</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Output Container -->
+                    <div class="results-container">
+                        <div id="arena-empty-state" class="empty-state glass">
+                            <i data-lucide="code-2" class="empty-icon text-muted"></i>
+                            <h3>Coding Challenges Unloaded</h3>
+                            <p>Submit your target role to receive exactly 3 specialized questions with AI design insights.</p>
+                        </div>
+                        <div id="arena-loading-state" class="loading-state hidden glass">
+                            <div class="spinner"></div>
+                            <h3>Recommender Agent curating problems...</h3>
+                            <p>Sifting through patterns, topics, and placement frequency metrics.</p>
+                        </div>
+                        <div id="arena-results" class="challenges-grid hidden">
+                            <!-- Challenge cards go here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 4: Mock Interview Chat -->
+            <section class="tab-panel" id="panel-interview">
+                <div class="interview-layout">
+                    <!-- Setup Form -->
+                    <div id="interview-setup-card" class="interview-setup-card glass">
+                        <div class="setup-header">
+                            <i data-lucide="users" class="setup-icon"></i>
+                            <h2>Launch AI Mock Interview</h2>
+                            <p>Configure a simulated 1-on-1 interview session. The evaluator agent will score your answers.</p>
+                        </div>
+                        <form id="form-interview-setup" class="prep-form">
+                            <div class="form-group">
+                                <label for="interview-role">Target Position</label>
+                                <input type="text" id="interview-role" required placeholder="e.g. Frontend Engineer, Security Analyst">
+                            </div>
+                            <div class="form-group">
+                                <label for="interview-type">Interview Type</label>
+                                <select id="interview-type" required>
+                                    <option value="tech" selected>Technical (Algorithms, System Design, Coding)</option>
+                                    <option value="hr">HR / Behavioral (STAR questions, leadership, culture)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i data-lucide="play-circle"></i>
+                                <span>Start Simulation</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Chat Interface -->
+                    <div id="interview-chat-container" class="interview-chat-container glass hidden">
+                        <!-- Chat Header -->
+                        <div class="chat-header">
+                            <div class="chat-title-info">
+                                <div class="bot-avatar">AI</div>
+                                <div>
+                                    <h3 id="chat-header-role">Technical Interview - Software Engineer</h3>
+                                    <span class="chat-status"><span class="pulse-dot green"></span> Live Simulation</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" id="btn-request-hint">
+                                <i data-lucide="help-circle"></i>
+                                <span>Get Hint</span>
+                            </button>
+                        </div>
+
+                        <!-- Chat Messages Window -->
+                        <div class="chat-messages" id="chat-messages-window">
+                            <!-- Dynamically populated messages -->
+                        </div>
+
+                        <!-- User Answer Input -->
+                        <div class="chat-input-area">
+                            <form id="form-submit-answer" class="chat-input-form">
+                                <textarea id="user-answer-text" required placeholder="Type your detailed response here... (Be thorough for a higher AI score)" rows="3"></textarea>
+                                <div class="input-actions">
+                                    <span class="char-count">Press Submit when ready</span>
+                                    <button type="submit" class="btn btn-primary" id="btn-submit-answer">
+                                        <i data-lucide="send"></i>
+                                        <span>Submit Answer</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Evaluation Banner -->
+                    <div id="interview-evaluation-card" class="evaluation-card glass hidden">
+                        <div class="evaluation-header">
+                            <div class="score-radial">
+                                <span class="score-num" id="eval-score">0</span>
+                                <span class="score-denom">/10</span>
+                            </div>
+                            <div class="evaluation-title">
+                                <h2>AI Interview Performance Report</h2>
+                                <p>Evaluator Agent assessment on your submitted answer</p>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" id="btn-reset-interview">
+                                <i data-lucide="refresh-cw"></i>
+                                <span>New Interview</span>
+                            </button>
+                        </div>
+
+                        <div class="evaluation-details">
+                            <div class="eval-section">
+                                <h4 class="text-green"><i data-lucide="check-circle-2"></i> Strengths</h4>
+                                <ul id="eval-strengths-list"></ul>
+                            </div>
+                            <div class="eval-section">
+                                <h4 class="text-red"><i data-lucide="x-circle"></i> Areas of Improvement</h4>
+                                <ul id="eval-weaknesses-list"></ul>
+                            </div>
+                            <div class="eval-section col-span-2">
+                                <h4 class="text-indigo"><i data-lucide="lightbulb"></i> Actionable Practice Tips</h4>
+                                <ul id="eval-tips-list"></ul>
+                            </div>
+                        </div>
+
+                        <div class="evaluation-footer">
+                            <span class="badge badge-info">Next Recommended Level: <strong id="eval-next-difficulty">Medium</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 5: Agent Activity Log -->
+            <section class="tab-panel" id="panel-logs">
+                <div class="logs-wrapper glass">
+                    <div class="logs-header">
+                        <div class="logs-title">
+                            <i data-lucide="activity"></i>
+                            <h3>Agent Telemetry Stream</h3>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" id="btn-clear-logs-ui" style="display:none;">Clear UI</button>
+                    </div>
+                    <div class="logs-timeline" id="logs-timeline-container">
+                        <!-- Dynamic logs go here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
