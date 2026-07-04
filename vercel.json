@@ -14,15 +14,6 @@
   "routes": [
     { "src": "/api/(.*)", "dest": "/backend/main.py" },
     { "src": "/(.*)", "dest": "/frontend/$1" }
-  ],
-  "env": {
-    "GEMINI_API_KEY": "@gemini_api_key",
-    "MONGO_URI": "@mongo_uri",
-    "SECRET_KEY": "@jwt_secret"
-  },
-  "build": {
-    "env": {
-      "PYTHONUNBUFFERED": "1"
-    }
-  }
+  ]
 }
+
